@@ -7,7 +7,7 @@ const addNoteHandler = (request, h) => {
   // payload = cara mendapatkan body request di Hapi
 
   const id = nanoid(16); // nanoid -> for generate id automatic
-  const createdAt = new Date().toISOString;
+  const createdAt = new Date().toISOString();
   const updatedAt = createdAt;
 
   const newNote = {
@@ -53,6 +53,7 @@ const getAllNotesHandler = () => ({
   },
 });
 
+// function to get note by Id
 const getNotesByIdHandler = (request, h) => {
   const { id } = request.params;
   const note = notes.filter((n) => n.id === id)[0];
@@ -78,7 +79,7 @@ const getNotesByIdHandler = (request, h) => {
 const editNoteByIdHandler = (request, h) => {
   const { id } = request.params;
   const { title, tags, body } = request.payload;
-  const updatedAt = new Date().toISOString;
+  const updatedAt = new Date().toISOString();
 
   const index = notes.findIndex((note) => note.id === id);
 
@@ -91,7 +92,7 @@ const editNoteByIdHandler = (request, h) => {
       updatedAt,
     };
     const response = h.response({
-      status: 'sucess',
+      status: 'success',
       message: 'Catatan berhasil diperbarui',
     });
     response.code(200);
@@ -106,15 +107,41 @@ const editNoteByIdHandler = (request, h) => {
   return response;
 };
 
+// function to delete note
+const deleteNoteByHandler = (request, h) => {
+  const { id } = request.params;
+
+  const index = notes.findIndex((note) => note.id === id);
+
+  if (index !== -1) {
+    notes.splice(index, 1);
+    const response = h.response({
+      status: 'success',
+      message: 'Catatan berhasil dihapus',
+    });
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Catatan gagal dihapus. Id tidak ditemukan',
+  });
+  response.code(404);
+  return response;
+};
+
 module.exports = {
   addNoteHandler,
   getAllNotesHandler,
   getNotesByIdHandler,
   editNoteByIdHandler,
+  deleteNoteByHandler,
 };
 
 /*
 notes:
 1.Spread operator pada kode di atas digunakan untuk mempertahankan nilai notes[index]
    yang tidak perlu diubah
+2. untuk menghapus data pada array berdasarkan index, gunakan method array splice().
 */
